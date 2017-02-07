@@ -195,7 +195,17 @@ local _pointList={
 		{ 1062,  285, 0xf3b25e},
 		{ 1181,  257, 0xde2f3c},
 		{ 1071,  555, 0xd52c22},
-	}
+	},
+	["buyExp"]={
+		{ 742,  365, 0x5c534b},
+		{  941,  993, 0x393125},
+		{  742,  365, 0x5c534b},
+	},
+	["UISize"]={
+		{0,250,400,516},
+		{0,0,200,266},
+	},
+	
 }
 
 local pointList = converTab(_pointList)
@@ -311,7 +321,7 @@ MyTable = {
             {
                 ["type"] = "Label",
                 ["text"] = "模式选择",
-                ["size"] = 25,
+                ["size"] = 10,
                 ["align"] = "left",
                 ["color"] = "0,0,0",
             },
@@ -325,8 +335,10 @@ MyTable = {
     }   
 }
 local MyJsonString = json.encode(MyTable)
-fwShowWnd("wid",0,250,400,516,1)
-fwShowButton("wid","showWin","",nil,nil,"lua.png",15,0,0,200,266)
+local frame1 = pointList["UISize"][1]
+local frame2 = pointList["UISize"][2]
+fwShowWnd("wid",frame1[1],frame1[2],frame1[3],frame1[4],1)
+fwShowButton("wid","showWin","",nil,nil,"lua.png",15,frame2[1],frame2[2],frame2[3],frame2[4])
 
 
 
@@ -446,11 +458,11 @@ registor("acceptGroupEvent",function(arg)
 	if model =="3" then
 				
 		registor("buyExpEvent",function(arg) 
-				touchPos({ 742,  365, 0x5c534b})
+				touchPos(pointList["buyExp"][1])
 				mSleep(300)
-				touchPos({  941,  993, 0x393125})
+				touchPos(pointList["buyExp"][2])
 				mSleep(300)
-				touchPos({  742,  365, 0x5c534b})
+				touchPos(pointList["buyExp"][3])
 				end,2);
 		
 	end
