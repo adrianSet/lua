@@ -1,0 +1,15 @@
+[res]
+lua.png
+groupB.png
+accpet.png
+standard.png
+[lib]
+[file]
+main.lua
+autoHun10.lua
+
+autoGouliang.lua
+
+buyExp.lua
+
+testMain.lua
