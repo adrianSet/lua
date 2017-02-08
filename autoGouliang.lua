@@ -107,11 +107,23 @@ function converTab(tab)
 end
 
 local _pointList={
+	
+	["acceptGroup"]={
+		{  396, 1871, 0xc0ae9d},
+		{  397, 1864, 0x876f5b},
+		{  407, 1846, 0x50aa5a},
+		{  434, 1669, 0xa3473c},
+	},
 	["standard"]={1235,93},
 	["mid"]={369,940},
 	["right"]={431,686},
 	
 	["heroChange"]={
+		["littleConfig"]={
+			["spend"]=15,
+			["offset"]=100,
+		},
+	
 		["mainChange"]={
 			{ 1004,  546, 0x120d30 },
 			["short3"]={ 0xfc9d19, "24|2|0xffea03,7|-15|0xf8ae14,23|-25|0xffe805", 90, 637, 1378, 911, 1555},
@@ -202,8 +214,9 @@ local _pointList={
 		{  742,  365, 0x5c534b},
 	},
 	["UISize"]={
-		{0,250,400,516},
-		{0,0,200,266},
+		{0,250,200,350},
+		{0,0,250,250},
+		{100,0,300,250},
 	},
 	
 }
@@ -241,7 +254,7 @@ end
 
 function animation(pos1,pos2,spend)
 	if spend==nil then
-		spend=15
+		spend=pointList["heroChange"]["littleConfig"]["spend"]
 	end
     local zx = pos2[1] - pos1[1]
     local zy = pos2[2] - pos1[2]
@@ -337,6 +350,7 @@ MyTable = {
 local MyJsonString = json.encode(MyTable)
 local frame1 = pointList["UISize"][1]
 local frame2 = pointList["UISize"][2]
+local frame3 = pointList["UISize"][3]
 fwShowWnd("wid",frame1[1],frame1[2],frame1[3],frame1[4],1)
 fwShowButton("wid","showWin","",nil,nil,"lua.png",15,frame2[1],frame2[2],frame2[3],frame2[4])
 
@@ -380,15 +394,17 @@ end
 
 
 local searchLevel1 = function()
-	local spend = 15
+	local spend = pointList["heroChange"]["littleConfig"]["spend"]
+	local offset = pointList["heroChange"]["littleConfig"]["offset"]
+
 	repeat
 		keepScreen(true)
 		local x,y = mutilColorInRegionCover(pointList.heroChange.search.level)
 		if x~=nil then
-			spend = 15
+			spend = pointList["heroChange"]["littleConfig"]["spend"]
 			local status = 0
 			for _,v in ipairs(pointList.heroChange.ignoreExp) do
-				local p = {x+100,y,v}
+				local p = {x+offset,y,v}
 				
 				if isColor(p[1],p[2],p[3],90) then
 					status=1
@@ -397,7 +413,7 @@ local searchLevel1 = function()
 			end
 			
 			if status ==0 then
-				nLog("@@@" .. 100 ..":".. 0 ..":color:" .. getColor(x+100, y))
+				nLog("@@@" .. 100 ..":".. 0 ..":color:" .. getColor(x+offset, y))
 				keepScreen(false)
 				return x,y
 			end
@@ -423,8 +439,8 @@ registor("standardEvent",function(arg)
 
 
 registor("acceptGroupEvent",function(arg) 
-			touchPos(arg);
-		end);
+			touchPos(pointList["acceptGroup"][3])
+		end,3);
 	if model == "1" then
 --******************司机退出 退出副本*********************************	
 		registor("isGroupEvent",function(arg) 
@@ -635,15 +651,11 @@ repeat
 	end
 	
 	--******************-- 接受组队*********************************
-	x, y = findImageInRegionFuzzy("accpet.png",10,366,1776,452,1868, 0); 
-	if x~=-1 and y~=-1 then
-		local listener = eventListener["acceptGroupEvent"]
-		if listener~=nil then
-			arg[1],arg[2]=x,y
-			listener.func(arg)
-		end
-	end
+	listener = eventListener["acceptGroupEvent"]
 	
+	if listener~=nil and calcCount%listener.delay==0 and  multiColor(pointList["acceptGroup"]) then
+			listener.func()
+	end
 	
 	
 	local vid = fwGetPressedButton()
@@ -651,7 +663,7 @@ repeat
 	if vid == "showWin" then
 		if winStatus==0 then
 			winStatus=1
-			fwShowButton("wid","config","",nil,nil,"lua.png",15,100,0,300,266)
+			fwShowButton("wid","config","",nil,nil,"lua.png",15,frame3[1],frame3[2],frame3[3],frame3[4])
 		else
 			winStatus=0
 			fwCloseView("wid","config");
