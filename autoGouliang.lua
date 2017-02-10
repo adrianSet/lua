@@ -109,10 +109,33 @@ end
 local _pointList={
 	
 	["acceptGroup"]={
-		{  396, 1871, 0xc0ae9d},
-		{  397, 1864, 0x876f5b},
-		{  407, 1846, 0x50aa5a},
-		{  434, 1669, 0xa3473c},
+		{  406, 1973, 0xdc705f},
+		{  410, 1936, 0x856c57},
+		{  429, 1850, 0x87705c},
+		{  414, 1822, 0x53b05e},
+	},
+	["tupoDetail"]={
+		{ 380, 1534, 0xd2c4b2 },
+		--["attackOffset"]={235,89},
+		["attackOffset"]={205,60},
+		["offsetx"]=216,
+		["offsety"]=569,
+	},
+	
+	["feeded"]={
+		["status"]={
+			{  287,  991, 0x12100c},
+			{  309,  993, 0xe7cfaf},
+			{  336,  991, 0x272420},
+			{  358, 1006, 0xac9b82},
+		},
+		["y"]={ 1020,  863, 0xf3b25e },
+		["heroListIndexPoint"]={
+			{ 1373, 1746, 0xefc9b3 },
+			["offset"] = 237,
+		},
+		
+		
 	},
 	["standard"]={1235,93},
 	["mid"]={369,940},
@@ -196,11 +219,13 @@ local _pointList={
 		{ 1434,  629, 0x635e7d},
 	},
 	["fight"]={
-		{ 1512, 1079, 0xd8d2c0},
-		{ 1517, 1074, 0x407293},
-		{ 1526, 1075, 0x332eb0},
-		{ 1512, 1057, 0xf8f3e0},
-
+		
+		{ 1258, 1978, 0x221d26},
+		{ 1307, 1971, 0x9b355c},
+		{ 1381, 2022, 0x544c75},
+		{ 1499, 1836, 0x836a56},
+		{ 1470, 1832, 0xefead7},
+		{ 1492, 1853, 0xf2edda},
 	},
 	["tupo"]={
 		{ 1199, 1727, 0xf3b25e},
@@ -209,6 +234,9 @@ local _pointList={
 		{ 1071,  555, 0xd52c22},
 	},
 	["buyExp"]={
+		--厕纸
+		{  659, 1190, 0x4c4b5c },
+		--exp
 		{ 742,  365, 0x5c534b},
 		{  941,  993, 0x393125},
 		{  742,  365, 0x5c534b},
@@ -222,6 +250,8 @@ local _pointList={
 }
 
 local pointList = converTab(_pointList)
+
+nLog(pointList["index"][1][1] .. "," .. pointList["index"][1][2])
 
 local eventListener={
 	
@@ -241,7 +271,7 @@ local enum = {
 	}
 	
 local globalVariable ={
-		["activyStatus"]=enum["activyStatus_standby"],
+		["activyStatus"]=enum["activyStatus_index"],
 		["debug"]=true,
 }
 
@@ -319,9 +349,10 @@ end
 
 MyTable = {
     ["style"]        =  "default",
-    ["width"]        =  w/2,
+    ["width"]        =  w*6/7,
     ["height"]       =  h/2,
     ["config"]       =  "save_01.dat",
+	["rettype"]		 =  "table",
     ["timer"]        =  99,
     ["orient"]       =  2,
     ["pagetype"]     =  "multi",
@@ -331,6 +362,13 @@ MyTable = {
     pages            =
     {
         {
+			{
+                ["type"] = "Label",
+                ["text"] = "全局设置",
+                ["size"] = 30,
+                ["align"] = "left",
+                ["color"] = "0,0,0",
+            },
             {
                 ["type"] = "Label",
                 ["text"] = "模式选择",
@@ -340,9 +378,74 @@ MyTable = {
             },
             {
                 ["type"] = "ComboBox",
-                ["list"] = "index0,狗粮模式,御魂模式,购买达摩",
+                ["list"] = "狗粮模式,御魂模式,购买达摩,结界抢坑,自动挂机突破",
                 ["select"] = "1",
-                ["source"] = "test"
+                ["source"] = "test",
+				["id"] = "model"
+            }
+        },
+		 {
+			{
+                ["type"] = "Label",
+                ["text"] = "狗粮设置",
+                ["size"] = 30,
+                ["align"] = "left",
+                ["color"] = "0,0,0",
+            },
+        },
+		 {
+			{
+                ["type"] = "Label",
+                ["text"] = "结界抢坑设置",
+                ["size"] = 30,
+                ["align"] = "left",
+                ["color"] = "0,0,0",
+            },
+			{
+                ["type"] = "Label",
+                ["text"] = "选择坑位",
+                ["size"] = 20,
+                ["align"] = "left",
+                ["color"] = "0,0,0",
+            },
+            {
+                ["type"] = "ComboBox",
+                ["list"] = "1,2,3,4,5,6,7",
+                ["select"] = "1",
+                ["source"] = "test",
+				["id"] = "feedIndex",
+            }
+        },
+		{
+			
+			{
+                ["id"] = "autoTupo",
+                ["type"] = "CheckBoxGroup",
+                ["list"] = "是否自动挂机突破",
+                ["select"] = "",
+				["size"] = 50,
+            },
+			
+			{
+                ["type"] = "Label",
+                ["text"] = "勋章购买设置",
+                ["size"] = 30,
+                ["align"] = "left",
+                ["color"] = "0,0,0",
+            },
+			{
+                ["type"] = "Label",
+                ["text"] = "购买物品",
+                ["size"] = 20,
+                ["align"] = "left",
+                ["color"] = "0,0,0",
+            },
+            {
+                ["type"] = "ComboBox",
+                ["list"] = "草纸,经验达摩",
+                ["select"] = "1",
+                ["source"] = "test",
+				["id"] = "buyGoods",
             }
         }
     }   
@@ -352,7 +455,7 @@ local frame1 = pointList["UISize"][1]
 local frame2 = pointList["UISize"][2]
 local frame3 = pointList["UISize"][3]
 fwShowWnd("wid",frame1[1],frame1[2],frame1[3],frame1[4],1)
-fwShowButton("wid","showWin","",nil,nil,"lua.png",15,frame2[1],frame2[2],frame2[3],frame2[4])
+fwShowButton("wid","config","",nil,nil,"lua.png",15,frame2[1],frame2[2],frame2[3],frame2[4])
 
 
 
@@ -427,8 +530,10 @@ local searchLevel1 = function()
 			
 end
 
-local init = function(model)
+local init = function(tab)
 eventListener={}
+
+local model = tab["model"]
 --******************事件注册*********************************
 
 registor("standardEvent",function(arg) 
@@ -439,9 +544,11 @@ registor("standardEvent",function(arg)
 
 
 registor("acceptGroupEvent",function(arg) 
-			touchPos(pointList["acceptGroup"][3])
+			touchPos(pointList["acceptGroup"][4])
 		end,3);
-	if model == "1" then
+	
+	--狗粮模式
+	if model == "0" then
 --******************司机退出 退出副本*********************************	
 		registor("isGroupEvent",function(arg) 
 				touchPos(pointList["break"]["great"]);
@@ -463,7 +570,8 @@ registor("acceptGroupEvent",function(arg)
 				
 			end
 	
-	if model =="2" then
+	--御魂模式
+	if model =="1" then
 				
 		registor("clickMidEvent",function(arg) 
 					touchPos(pointList["mid"]);
@@ -471,15 +579,94 @@ registor("acceptGroupEvent",function(arg)
 		
 	end
 	
-	if model =="3" then
+	
+	--购买模式模式
+	if model =="2" then
+		local buyGoods = tab["buyGoods"]
+		local pos =nil
+		if buyGoods == "0" then
+			pos = pointList["buyExp"][1]
+		else
+			pos = pointList["buyExp"][2]
+		end
+		
 				
 		registor("buyExpEvent",function(arg) 
-				touchPos(pointList["buyExp"][1])
-				mSleep(300)
-				touchPos(pointList["buyExp"][2])
+				touchPos(pos)
 				mSleep(300)
 				touchPos(pointList["buyExp"][3])
+				mSleep(300)
+				touchPos(pointList["buyExp"][4])
 				end,2);
+		
+	end
+	
+	--抢坑模式
+	if model =="3" then
+		waitBase =10
+		local index =  tonumber(tab["feedIndex"])
+		local _pos = pointList["feeded"]["heroListIndexPoint"][1]
+		local offset = pointList["feeded"]["heroListIndexPoint"]["offset"]
+		local pos = {_pos[1],_pos[2]-index*offset}
+				
+		registor("feedStatusEvent",function(arg)
+				while(true) do
+					if multiColor(pointList["feeded"]["status"]) then
+						touchPos(pointList["feeded"]["status"][3])
+						mSleep(550)
+						touchPos(pos)
+						mSleep(300)
+						touchPos(pointList["feeded"]["y"])
+					end
+				end
+				end);
+		
+	end
+	
+	
+	--结界挂机模式
+	if model =="4" then
+		local is_status = tab["autoTupo"] 
+		if is_status == "0" then
+			local _pos = pointList["tupoDetail"][1]
+			local offsetx = pointList["tupoDetail"]["offsetx"]
+			local offsety = pointList["tupoDetail"]["offsety"]
+			local attackOffset = pointList["tupoDetail"]["attackOffset"]
+			
+				
+			registor("autoTupoEvent",function(arg)
+					local index = arg[1]
+					
+					local pos = nil
+					if index ==0 then
+						pos = {_pos[1],_pos[2]}
+					elseif index==1 then 
+						pos = {_pos[1],_pos[2]-offsety}
+					elseif index==2 then 
+						pos = {_pos[1],_pos[2]-2*offsety}
+					elseif index==3 then 
+						pos = {_pos[1]+offsetx,_pos[2]}
+					elseif index==4 then 
+						pos = {_pos[1]+offsetx,_pos[2]-offsety}
+					elseif index==5 then 
+						pos = {_pos[1]+offsetx,_pos[2]-2*offsety}
+					elseif index==6 then 
+						pos = {_pos[1]+2*offsetx,_pos[2]}
+					elseif index==7 then 
+						pos = {_pos[1]+2*offsetx,_pos[2]-offsety}
+					elseif index==8 then 
+						pos = {_pos[1]+2*offsetx,_pos[2]-2*offsety}
+					end
+					
+					touchPos(pos)
+					mSleep(3000)
+					nLog(pos[1]+attackOffset[1] .. ":" .. pos[2]-attackOffset[2])
+					touchPos({pos[1]+attackOffset[1],pos[2]-attackOffset[2]})
+			end);
+			
+		end
+		
+		
 		
 	end
 	
@@ -490,6 +677,7 @@ end
 
 local winStatus = 0
 local calcCount = 0 
+waitBase = 200
 
 repeat
 	local x, y;
@@ -511,9 +699,9 @@ repeat
 	end
 	
 	--******************************************************************************************************
---	if globalVariable.debug and calcCount%2==0  then 
---		toast(globalVariable.activyStatus)
---	end
+	if globalVariable.debug and calcCount%5==0  then 
+		toast(globalVariable.activyStatus)
+	end
 	local listener;
 	if globalVariable.activyStatus == enum.activyStatus_standby then
 		
@@ -641,8 +829,23 @@ repeat
 				listener.func(arg)
 			end
 		end
+	elseif globalVariable.activyStatus==enum.activyStatus_tupo then
+		
+		listener = eventListener["autoTupoEvent"]
+		if listener~=nil  then
+			local index = calcCount%9
+			listener.func({index})
+		end
+		
+		
+	
 	end
 	
+	
+	listener = eventListener["feedStatusEvent"]
+	if listener~=nil  then
+		listener.func()
+	end
 	
 	listener = eventListener["buyExpEvent"]
 	if listener~=nil and calcCount%listener.delay==0 then
@@ -679,7 +882,7 @@ repeat
 		
     end
 	
-	mSleep(200);
+	mSleep(waitBase);
 	calcCount=calcCount+1
 	if calcCount==100000 then calcCount=0 end
 	
