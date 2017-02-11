@@ -137,6 +137,14 @@ local _pointList={
 		
 		
 	},
+	["target"]={
+		{  520, 1295, 0x261954},
+		{  540,  988, 0x262968},
+		{  536,  688, 0x352f6d},
+		{  372, 1233, 0x474f7f},
+		{  260,  952, 0xedd2b8},
+		{  353,  736, 0xf7330f},
+	},
 	["standard"]={1235,93},
 	["mid"]={369,940},
 	["right"]={431,686},
@@ -372,17 +380,47 @@ MyTable = {
             {
                 ["type"] = "Label",
                 ["text"] = "模式选择",
-                ["size"] = 10,
+                ["size"] = 15,
                 ["align"] = "left",
                 ["color"] = "0,0,0",
             },
             {
                 ["type"] = "ComboBox",
-                ["list"] = "狗粮模式,御魂模式,购买达摩,结界抢坑,自动挂机突破",
+                ["list"] = "狗粮模式,通用战斗模式,购买达摩,结界抢坑,自动挂机突破",
                 ["select"] = "1",
                 ["source"] = "test",
 				["id"] = "model"
-            }
+            },
+			{
+                ["type"] = "Label",
+                ["text"] = "目标选择",
+                ["size"] = 15,
+                ["align"] = "left",
+                ["color"] = "0,0,0",
+            },
+			{
+                ["id"] = "autoTarget",
+                ["type"] = "CheckBoxGroup",
+                ["list"] = "是否开启目标选择",
+                ["select"] = "0",
+            },
+			{
+				["width"] = 500,
+                ["id"] = "targetDelay",
+                ["type"] = "Edit",
+                ["prompt"] = "战斗目标选择频率",
+                ["text"] = "3",
+                ["kbtype"] = "number",
+				
+            },
+			{
+                ["id"] = "selectTarget",
+                ["type"] = "RadioGroup",
+                ["list"] = "左(前排),中(前排),右(前排),左(后排),中(BOSS),右(后排)",
+                ["select"] = "2",
+				
+            },
+			
         },
 		 {
 			{
@@ -447,7 +485,24 @@ MyTable = {
                 ["source"] = "test",
 				["id"] = "buyGoods",
             }
-        }
+        },
+		{
+			{
+                ["type"] = "Label",
+                ["text"] = "请选择",
+                ["width"] = 100,
+                ["nowrap"] = 1,
+            },
+            {
+                ["id"] = "year",
+                ["type"] = "Edit",
+                ["width"] = 100,
+                ["prompt"] = "年",
+                ["text"] = "1900",
+                ["kbtype"] = "number",
+                ["nowrap"] = 1,
+            },
+		}
     }   
 }
 local MyJsonString = json.encode(MyTable)
@@ -561,21 +616,24 @@ registor("acceptGroupEvent",function(arg)
 				
 			end);
 
-
-
-		registor("clickRightEvent",function(arg) 
-					touchPos(pointList["right"]);
-				end,2);
-
 				
-			end
+	end
+	
+	if tab["autoTarget"] == "0" then
+		local targetIndex = tonumber(tab["selectTarget"])+1
+		local delay = tonumber(tab["targetDelay"])
+		registor("autoTargetEvent",function(arg) 
+					touchPos(pointList["target"][targetIndex])
+				end,delay);
+		
+	end
+	
+	
 	
 	--御魂模式
 	if model =="1" then
 				
-		registor("clickMidEvent",function(arg) 
-					touchPos(pointList["mid"]);
-				end,3);
+		
 		
 	end
 	
@@ -796,15 +854,11 @@ repeat
 	elseif globalVariable.activyStatus == enum.activyStatus_fight then
 		
 	
-		listener = eventListener["clickMidEvent"]
+		listener = eventListener["autoTargetEvent"]
 		if listener~=nil and calcCount%listener.delay==0 then
 				listener.func(arg)
 		end
 		
-		listener = eventListener["clickRightEvent"]
-		if listener~=nil and calcCount%listener.delay==0 then
-				listener.func(arg)
-		end
 		
 	elseif globalVariable.activyStatus==enum.activyStatus_fuben  then
 		--******************--是否在组队状态*********************************
