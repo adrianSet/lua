@@ -6,13 +6,13 @@ local json = sz.json--写 showUI 前必须插入这一句
 local w,h = getScreenSize()
 local sdw,sdh= 1536,2048
 local pointFile 
-if w==1334 and h ==750 then
+if w==750 and h ==1334 then
 	pointFile= require("6-6s-7-8")
 	
 elseif w==1536 and h ==2048 then
 	pointFile= require("ipad")
 else
-	dialog("未适配的机型")
+	dialog("未适配的机型"..w..","..h)
 	return
 end
 
@@ -151,14 +151,8 @@ local enum = {
 	["activyStatus_index"]="index",
 	["activyStatus_prepareOfGroup"]="prepareOfGroup",
 	["activyStatus_inviteWin"]="inviteWin",
-	["activyStatus_entranceWindow"]="entranceWindow",
-	
-		
-
 	["activyStatus_yulingWin"]="yulingWin",
 	["activyStatus_chiWin"]="chiWin",
-	["activyStatus_repeatWin"]="repeatWin",
-	["activyStatus_groupWin"]="groupWin",
 
 	["runTask_gouliang"]="gouliang",
 	["runTask_yuhun"]="yuhun",
@@ -272,8 +266,8 @@ end
 
 MyTable = {
 	["style"]        =  "default",
-	["width"]        =  w*6/7,
-	["height"]       =  h/2,
+	["width"]        =  h,
+	["height"]       =  w,
 	["config"]       =  "save_01.dat",
 	["rettype"]		 =  "table",
 	["timer"]        =  99,
@@ -316,7 +310,7 @@ MyTable = {
 			{
 				["id"] = "autoInvite",
 				["type"] = "CheckBoxGroup",
-				["list"] = "是否开启自动邀请",
+				["list"] = "我是队长",
 				["select"] = "0",
 			},
 			{
@@ -538,15 +532,6 @@ MyTable = {
 		},
 	}   
 }
-local MyJsonString = json.encode(MyTable)
-local frame1 = pointList["UISize"][1]
-local frame2 = pointList["UISize"][2]
-local frame3 = pointList["UISize"][3]
-fwShowWnd("wid",frame1[1],frame1[2],frame1[3],frame1[4],1)
-fwShowButton("wid","config","",nil,nil,"lua.png",15,frame2[1],frame2[2],frame2[3],frame2[4])
-
-
-
 
 local registor =function(event,func,delay)
 	eventListener[event]={}
@@ -676,7 +661,6 @@ local init = function(tab)
 	
 	if tab["autoInvite"] == "0" then
 		registor("captainEvent",function() 
-				if multiColor(pointList["pointerOfcaptainExit"]) then
 					local flag=false
 					repeat
 						sleep(500,100)
@@ -703,12 +687,9 @@ local init = function(tab)
 						if multiColor(serialList) then
 							touchPos(serialList[1])
 							flag=true
+							globalVariable.activyStatus = enum.activyStatus_fight
 						end
-
 					until (flag)
-
-					
-				end
 			end,2);
 
 
@@ -1000,6 +981,12 @@ local init = function(tab)
 
 end
 
+local MyJsonString = json.encode(MyTable)
+retTable = {showUI(MyJsonString)};
+
+if retTable[1] then
+	init(retTable[2])
+end
 
 
 
@@ -1031,8 +1018,6 @@ repeat
 		globalVariable.activyStatus = enum.activyStatus_standby
 	elseif multiColor(pointList["fuben"]) then
 		globalVariable.activyStatus = enum.activyStatus_fuben
-	elseif multiColor(pointList["entranceWindow"]) then
-		globalVariable.activyStatus = enum.activyStatus_entranceWindow
 	elseif multiColor(pointList["tupo"]) then
 		globalVariable.activyStatus = enum.activyStatus_tupo
 	elseif multiColor(pointList["yulingWin"]) then
@@ -1046,7 +1031,7 @@ repeat
 
 
 	--******************************************************************************************************
-	if globalVariable.debug and calcCount%10==0  then 
+	if globalVariable.debug and calcCount%3==0  then 
 		toast(globalVariable.activyStatus)
 	end
 	local listener;
@@ -1085,8 +1070,8 @@ repeat
 					touchPos(pointList.heroChange.mainChange[1])
 					sleep(100,50)
 					touchPos(pointList.heroChange.mainChange[2])
-					sleep(1200,1000)
-					if multiColor(pointList.heroChange.sceneOfUpToN)==true then
+					sleep(3200,3000)
+					if multiColor(pointList.heroChange.sceneOfUpToN) then
 						sceneOfUpToN=true
 					end
 				until (sceneOfUpToN)
@@ -1094,21 +1079,20 @@ repeat
 				sleep(1200,1000)
 
 				repeat
-					if multiColor(pointList.heroChange.ncard)~=true then
+					if not multiColor(pointList.heroChange.ncard) then
 						touchPos(pointList.heroChange.ncard[1])
 						sleep(600,400)
 						touchPos(pointList.heroChange.selectedn)
 					end
 					sleep(800,500)
-					if multiColor(pointList.heroChange.ncard)==true then
+					if multiColor(pointList.heroChange.ncard) then
 						selectedN=true
 					end
 
 				until (selectedN)
 				sleep(300,200)
-				
 				local begin =pointList.heroChange.search.preSelectedOfscreenBar.begin
-				local endd =pointList.heroChange.search.preSelectedOfscreenBar.end
+				local endd =pointList.heroChange.search.preSelectedOfscreenBar.endd
 				animation({ begin[1], begin[2]+math.random(-15,15)},{ endd[1], endd[2]+math.random(-15,15)},13)
 				
 				local x,y
@@ -1145,13 +1129,13 @@ repeat
 			mSleep(200)
 		end
 
-elseif globalVariable.activyStatus == enum.activyStatus_fight then
+    elseif globalVariable.activyStatus == enum.activyStatus_fight then
         listener = eventListener["selectedWoodEvent"]
 			if listener~=nil and calcCount%listener.delay==0 then
 				listener.func(arg)
 			end
 
-		if multiColor(pointList["fightOver"])==false then
+		if not multiColor(pointList["fight"]) then
 			local plist = pointList["target"][8]
 			local cpoint = plist[math.random(1,#plist)]
 			sleep(1500,1200)
@@ -1162,37 +1146,12 @@ elseif globalVariable.activyStatus == enum.activyStatus_fight then
 		end
 
 
---		if multiColor(pointList["gotBonus"]) then
---			sleep(400,200)
---			globalVariable.activyStatus =enum.activyStatus_bonus
---			local plist = pointList["target"][8]
---			local cpoint = plist[math.random(1,#plist)]
-
---			local model = globalVariable.task.model
---			if model == 5 then
---				sleep(2000)
-
---			end
-
---			touchPos(cpoint)
---			sleep(200)
---			touchPos(cpoint)
---			sleep(200)
-
-
---		else
---			listener = eventListener["autoTargetEvent"]
---			if listener~=nil and calcCount%listener.delay==0 then
---				listener.func(arg)
---			end
-
---		end
-	elseif globalVariable.activyStatus==enum.activyStatus_prepareOfGroup  then
+    elseif globalVariable.activyStatus==enum.activyStatus_prepareOfGroup  then
 		listener = eventListener["captainEvent"]
 		if listener~=nil and calcCount%listener.delay==0 then
 			listener.func(arg)
 		end
-	elseif globalVariable.activyStatus==enum.activyStatus_inviteWin  then
+    elseif globalVariable.activyStatus==enum.activyStatus_inviteWin  then
 		--sleep(1000,500)
 		touchPos(pointList["inviteWin"][3])
 		sleep(1000,500)
@@ -1200,7 +1159,7 @@ elseif globalVariable.activyStatus == enum.activyStatus_fight then
 		globalVariable.activyStatus = enum.activyStatus_map
 
 
-elseif globalVariable.activyStatus==enum.activyStatus_bonus  then
+    elseif globalVariable.activyStatus==enum.activyStatus_bonus  then
 		globalVariable.activyStatus = enum.activyStatus_map
 		local plist = pointList["target"][8]
 		local a =plist[math.random(1,#plist)]
@@ -1262,7 +1221,7 @@ elseif globalVariable.activyStatus==enum.activyStatus_bonus  then
 
 
 
-		if  multiColor(pointList["acceptGroup"]) and not multiColor(pointList["octopus"]) then
+		if  multiColor(pointList["acceptGroup"]) then
 			if multiColor(pointList["acceptAutoGroup"]) then
 				touchPos(pointList["acceptAutoGroup"][1])
 			else
@@ -1273,71 +1232,7 @@ elseif globalVariable.activyStatus==enum.activyStatus_bonus  then
 
 	end
 
-	------------------------------ index and map status entry-----------------------------------------------------
-	if globalVariable.activyStatus==enum.activyStatus_index or  globalVariable.activyStatus==enum.activyStatus_map  then
-		--******************-- 接受组队*********************************
-		listener = eventListener["sendAdEvent"]
-
-		if listener~=nil and calcCount%listener.delay==0  then
-			local loopStatus = 1
-
-			repeat
-
-				--------已获取焦点-------------
-				if  multiColor(pointList.messageComponent.gotFocus) then
-
-					--					local index = globalVariable["adindex"]%#globalVariable["adList"]
-					--					if index==0 then
-					--						index=#globalVariable["adList"]
-					--					end
-
-					--					local adContext = globalVariable["adList"][index]
-					inputText(globalVariable["adContext"] .. randomList[math.random(1,#randomList)])
-					mSleep(100)
-					touchPos(pointList["messageComponent"]["enterPoint"])
-
-					loopStatus = 0
-					-----------聊天窗口已打开----------------
-				elseif  multiColor(pointList["messageComponent"]["sessionStatusForGeneral"]) then
-
-					touchPos(pointList["messageComponent"]["worldChannel"])
-					mSleep(100)
-					--					--频道切换
-					--					touchPos(pointList["messageComponent"]["switchChannel"])
-					--					sleep(2000,911)
-					--					if globalVariable["message"]["channelIndex"]>10 then
-					--						globalVariable["message"]["channelIndex"]=1
-					--					end
-
-					--					touchPos(pointList["messageComponent"]["backspacePoint"])
-					--					sleep(300)
-					--					inputText(globalVariable["message"]["channelIndex"])
-					--					globalVariable["message"]["channelIndex"]=globalVariable["message"]["channelIndex"] +1
-					--					mSleep(200)
-
-					--					--切换喊话模式
-					--					touchPos(pointList["messageComponent"]["worldChannel"])
-					--					mSleep(50)
-					--got input focus
-					touchPos(pointList["messageComponent"]["sessionStatusForGeneral"][2])
-
-				else
-
-
-					touchPos(pointList.messageComponent.messageWin)
-
-
-					mSleep(400)
-
-				end
-				mSleep(500)
-			until (loopStatus==0)
-
-
-		end
-
-
-	end
+	
 
 	listener = eventListener["feedStatusEvent"]
 	if listener~=nil  then
@@ -1356,35 +1251,11 @@ elseif globalVariable.activyStatus==enum.activyStatus_bonus  then
 	end
 
 
-
-
-
-
-	local vid = fwGetPressedButton()
-
-	if vid == "showWin" then
-		if winStatus==0 then
-			winStatus=1
-			fwShowButton("wid","config","",nil,nil,"lua.png",15,frame3[1],frame3[2],frame3[3],frame3[4])
-		else
-			winStatus=0
-			fwCloseView("wid","config");
-		end
-
-	end
-	if vid == "config" then
-		retTable = {showUI(MyJsonString)};
-
-		if retTable[1] then
-			init(retTable[2])
-		end
-
-	end
+	
 	local endTime = socket.gettime()
 	local executeTime = (endTime-beginTime)*1000
 
 	if executeTime<waitBase then
-		--toast(executeTime,1)
 		mSleep(waitBase-executeTime)
 	end
 
