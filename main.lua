@@ -688,6 +688,7 @@ local init = function(tab)
 							touchPos(serialList[1])
 							flag=true
 							globalVariable.activyStatus = enum.activyStatus_fight
+							sleep(200,100)
 						end
 					until (flag)
 			end,2);
